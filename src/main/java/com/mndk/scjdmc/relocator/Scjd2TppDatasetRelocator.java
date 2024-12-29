@@ -36,7 +36,7 @@ public class Scjd2TppDatasetRelocator {
             SimpleFeatureIterator featureIterator = featureCollection.features();
 
             int typeCount = IntegerMapUtils.increment(typeCountMap, layerDataType, 1);
-            ProgressBar progressBar = ProgressBarUtils.createProgressBar(
+            ProgressBar progressBar1 = ProgressBarUtils.createProgressBar(
                     String.format("Relocating: %s - %s#%d",
                             fileInformation.getNameForFile(), layerDataType.getEnglishName(), typeCount
                     ), featureCollection.size()
@@ -66,18 +66,24 @@ public class Scjd2TppDatasetRelocator {
                     }
                     if (newFeature != null) {
                         writer.write(newFeature);
-                        writer.flush();
+                        // writer.flush();
                     }
                 }
-                progressBar.step();
+                progressBar1.step();
             }
             featureIterator.close();
+            progressBar1.close();
 
-            progressBar.setExtraMessage("Writing...");
+            ProgressBar progressBar2 = ProgressBarUtils.createProgressBar(
+                    String.format("Closing: %s - %s#%d",
+                            fileInformation.getNameForFile(), layerDataType.getEnglishName(), typeCount
+                    ), writerMap.size()
+            );
             for (Map.Entry<TppTileCoordinate, SimpleFeatureJsonWriter> entry : writerMap.entrySet()) {
                 entry.getValue().close();
+                progressBar2.step();
             }
-            progressBar.close();
+            progressBar2.close();
 
             return null;
         });

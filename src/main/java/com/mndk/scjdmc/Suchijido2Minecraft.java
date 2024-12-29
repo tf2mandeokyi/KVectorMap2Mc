@@ -20,6 +20,7 @@ Operations
  | 2. Area coastline relocation
  | 3. T++ geojson file combination + conversion
  | 4. Terrain test
+Warning: You must extract all the zip files in the 'areas' folder before proceeding.
 
 Select operation number(s) [ex: "1", "23" ]:\s""");
 

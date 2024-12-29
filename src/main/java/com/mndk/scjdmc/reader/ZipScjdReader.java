@@ -26,12 +26,12 @@ public class ZipScjdReader extends ShpDirScjdReader {
         String extractFolderName = zipFile.getName().substring(0, zipFile.getName().lastIndexOf("."));
         File zipDestination = new File(zipFile.getParent(), extractFolderName);
         if(zipDestination.exists() && !zipDestination.delete()) {
-            LOGGER.warn("Failed to delete directory: " + zipDestination);
+            LOGGER.warn("Failed to delete directory: {}", zipDestination);
         }
 
         try {
             boolean notEmpty = ZipManager.extractZipFile(zipFile, zipDestination, charset);
-            if(!notEmpty) LOGGER.warn("Zip file is empty: " + zipFile);
+            if(!notEmpty) LOGGER.warn("Zip file is empty: {}", zipFile);
 
             correctZipContentToStandard(zipDestination, charset);
 

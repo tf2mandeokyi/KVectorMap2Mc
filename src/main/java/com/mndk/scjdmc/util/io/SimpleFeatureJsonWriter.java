@@ -32,10 +32,6 @@ public class SimpleFeatureJsonWriter implements Closeable {
         writer.write(CACHE_STRING);
     }
 
-    public void flush() throws IOException {
-        writer.flush();
-    }
-
     @Override
     public void close() throws IOException {
         writer.write("]}");
