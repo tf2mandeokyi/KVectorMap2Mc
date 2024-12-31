@@ -2,11 +2,13 @@ package com.mndk.scjdmc.reader;
 
 import com.mndk.scjdmc.Constants;
 import com.mndk.scjdmc.column.LayerDataType;
+import com.mndk.scjdmc.util.IntegerMapUtils;
 import com.mndk.scjdmc.util.ScjdDirectoryParsedMap;
 import com.mndk.scjdmc.util.file.ScjdFileInformation;
 import com.mndk.scjdmc.util.ScjdParsedType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.geotools.data.simple.SimpleFeatureCollection;
 import org.locationtech.jts.geom.Geometry;
 
 import java.io.File;
@@ -14,6 +16,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Map;
 
 public class GeoJsonDirScjdReader extends ScjdDatasetReader {
 
@@ -42,6 +46,7 @@ public class GeoJsonDirScjdReader extends ScjdDatasetReader {
 
         ScjdFileInformation fileInformation = new ScjdFileInformation(directory, parsedType);
 
+        Map<LayerDataType, Integer> layerTypeCount = new HashMap<>();
         ScjdDirectoryParsedMap<T> result = new ScjdDirectoryParsedMap<>(fileInformation);
         for(File geojsonFile : geojsonFiles) {
 
@@ -58,7 +63,13 @@ public class GeoJsonDirScjdReader extends ScjdDatasetReader {
             LayerDataType layerDataType = LayerDataType.fromLayerName(geojsonFile.getName());
             if(!this.layerFilter.apply(layerDataType)) continue;
 
-            T geojsonReadResult = GeoJsonScjdReader.read(geojsonFile, charset, featureCollectionFunction);
+            Reader reader = new FileReader(geojsonFile, charset);
+            SimpleFeatureCollection featureCollection =
+                    (SimpleFeatureCollection) Constants.FEATURE_JSON.readFeatureCollection(reader);
+            reader.close();
+
+            int typeCount = IntegerMapUtils.increment(layerTypeCount, layerDataType, 1);
+            T geojsonReadResult = featureCollectionFunction.apply(featureCollection, layerDataType, typeCount);
             result.put(layerDataType, geojsonReadResult);
         }
 

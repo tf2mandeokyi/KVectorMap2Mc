@@ -38,8 +38,8 @@ public class ShpScjdReader {
 
     public static <T> T read(
             File shpFile, ScjdFileInformation fileInformation, Charset charset,
-            ScjdDatasetReader.FCFunction<T> featureCollectionFunction
-    ) throws IOException {
+            ScjdDatasetReader.FCFunction<T> featureCollectionFunction,
+            int typeCount) throws IOException {
 
         AtomicReference<DataStore> dataStore = new AtomicReference<>();
         AtomicReference<SimpleFeatureCollection> featureCollection = new AtomicReference<>();
@@ -63,7 +63,7 @@ public class ShpScjdReader {
         });
 
         LayerDataType layerDataType = LayerDataType.fromLayerName(shpFile.getName());
-        T result = featureCollectionFunction.apply(featureCollection.get(), layerDataType);
+        T result = featureCollectionFunction.apply(featureCollection.get(), layerDataType, typeCount);
         dataStore.get().dispose();
         return result;
 

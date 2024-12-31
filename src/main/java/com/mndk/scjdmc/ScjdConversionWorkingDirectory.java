@@ -72,7 +72,7 @@ public class ScjdConversionWorkingDirectory {
     }
 
 
-    public void convertScjdGeoJsonToOsmGeoJson() throws IOException {
+    public void convertScjdGeoJsonToOsmGeoJson() {
 
         if(debug) LOGGER.info("Converting individual scjd geojson fileset into single osm style geojson file...");
 
@@ -90,19 +90,24 @@ public class ScjdConversionWorkingDirectory {
         for(TppTileCoordinate coordinate : coordinates) {
             progressBar.step();
 
-            int count = ScjdGeoJsonTileCombiner.combine(
-                    this.scjdGeojsonFolder, StandardCharsets.UTF_8,
-                    this.tppGeoJsonFolder, StandardCharsets.UTF_8,
-                    coordinate, reader
-            );
+            int count = 0;
+            try {
+                count = ScjdGeoJsonTileCombiner.combine(
+                        this.scjdGeojsonFolder, StandardCharsets.UTF_8,
+                        this.tppGeoJsonFolder, StandardCharsets.UTF_8,
+                        coordinate, reader
+                );
+            } catch (Exception e) {
+                Constants.STACKED_THROWABLES.add(e);
+            }
             if(!Constants.STACKED_THROWABLES.isEmpty()) {
                 gui.setStatus(coordinate.getBoundingBox(), Color.RED);
+                Constants.STACKED_THROWABLES.popAllToLogger(LOGGER, "Error(s) caught while parsing " + coordinate);
             } else if(count == 0) {
                 gui.setStatus(coordinate.getBoundingBox(), Color.YELLOW);
             } else {
                 gui.setStatus(coordinate.getBoundingBox(), Color.GREEN);
             }
-            Constants.STACKED_THROWABLES.popAllToLogger(LOGGER, "Error(s) caught while parsing " + coordinate);
         }
         progressBar.close();
     }

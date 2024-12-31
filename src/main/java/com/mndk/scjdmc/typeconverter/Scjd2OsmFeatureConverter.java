@@ -1,11 +1,11 @@
 package com.mndk.scjdmc.typeconverter;
 
 import com.mndk.scjdmc.Constants;
-import com.mndk.scjdmc.reader.ScjdDatasetReader;
 import com.mndk.scjdmc.column.LayerDataType;
+import com.mndk.scjdmc.reader.ScjdDatasetReader;
 import com.mndk.scjdmc.util.ScjdDirectoryParsedMap;
-import com.mndk.scjdmc.util.file.ScjdFileInformation;
 import com.mndk.scjdmc.util.ScjdParsedType;
+import com.mndk.scjdmc.util.file.ScjdFileInformation;
 import com.mndk.scjdmc.util.function.FeatureFilter;
 import com.mndk.scjdmc.util.function.LayerFilterFunction;
 import org.geotools.data.collection.ListFeatureCollection;
@@ -51,13 +51,13 @@ public class Scjd2OsmFeatureConverter {
     ) throws IOException {
         ScjdFileInformation fileInformation = new ScjdFileInformation(file, parsedType);
 
-        ScjdDirectoryParsedMap<SimpleFeatureCollection> result = reader.read(
-                file, charset, parsedType, (sfc, layerDataType) ->
-                        toOsmStyleFeatureCollection(
-                                sfc, layerDataType, featureFilter,
-                                i -> fileInformation.getNameOrIndex() + "-" + layerDataType.getLayerName() + "-" + i
-                        )
-        );
+        ScjdDirectoryParsedMap<SimpleFeatureCollection> result = reader.read(file, charset, parsedType,
+                (sfc, layerDataType, typeCount) ->
+                        toOsmStyleFeatureCollection(sfc, layerDataType, featureFilter,
+                        i -> "%s-%s-%d-%d".formatted(
+                                fileInformation.getNameOrIndex(), layerDataType.getLayerName(),
+                                typeCount, i)
+                        ));
 
         Geometry coastlineGeometry = result.getCoastlineGeometry();
         if(coastlineGeometry != null) {

@@ -5,7 +5,7 @@ import java.util.Objects;
 public record IndexedEdge(int v0, int v1) {
     @Override
     public String toString() {
-        return String.format("IndexedEdge[%d, %d]", v0, v1);
+        return "IndexedEdge[%d, %d]".formatted(v0, v1);
     }
 
     @Override

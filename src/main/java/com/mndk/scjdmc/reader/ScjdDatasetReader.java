@@ -33,6 +33,6 @@ public abstract class ScjdDatasetReader {
     }
 
     public interface FCFunction<T> {
-        T apply(SimpleFeatureCollection p1, LayerDataType p2) throws IOException;
+        T apply(SimpleFeatureCollection collection, LayerDataType type, int typeCount) throws IOException;
     }
 }

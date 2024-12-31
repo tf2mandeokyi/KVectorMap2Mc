@@ -21,6 +21,8 @@ Operations
  | 3. T++ geojson file combination + conversion
  | 4. Terrain test
 Warning: You must extract all the zip files in the 'areas' folder before proceeding.
+Warning: There shouldn't be any junk files in the 'areas' or 'geojson_scjd' folder.
+         Only the necessary json files should be present.
 
 Select operation number(s) [ex: "1", "23" ]:\s""");
 

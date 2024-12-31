@@ -17,11 +17,11 @@ public class ScjdFileInformation {
     }
 
     public String getNameOrIndex() {
-        switch(parsedType) {
-            case INDEX: return ScjdMapIndexUtils.getMapIndexFromFileName(file.getName());
-            case TILE: return file.getParentFile().getName() + "," + file.getName();
-            default: return file.getName();
-        }
+        return switch (parsedType) {
+            case INDEX -> ScjdMapIndexUtils.getMapIndexFromFileName(file.getName());
+            case TILE -> file.getParentFile().getName() + "," + file.getName();
+            default -> file.getName();
+        };
     }
 
     public String getNameForFile() {

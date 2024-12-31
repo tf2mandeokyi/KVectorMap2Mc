@@ -46,6 +46,7 @@ public class ProgressGui extends JFrame {
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
+            this.setBackground(Color.BLACK);
             Dimension dimension = ProgressGui.this.getSize();
             this.setSize(dimension);
             if (dimension.width <= 0 || dimension.height <= 0 || closed || boundingBox == null) {

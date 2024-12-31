@@ -79,7 +79,7 @@ public class ScjdCoastlineRelocator {
 
             if(debug) LOGGER.info("Writing boundary features of {}...", areaShpFolder.getName());
 
-            reader.read(areaShpFolder, sourceEncoding, ScjdParsedType.AREA, (featureCollection, layerDataType) -> {
+            reader.read(areaShpFolder, sourceEncoding, ScjdParsedType.AREA, (featureCollection, layerDataType, typeCount) -> {
                 SimpleFeatureIterator boundaryFeatures = featureCollection.features();
 
                 for(int i = 0; boundaryFeatures.hasNext(); i++) {
@@ -126,7 +126,7 @@ public class ScjdCoastlineRelocator {
     }
     private static ProgressBar createBoundaryWritingProgressBar(File areaShpFolder,
                                                                 int featureIndex, int featureCount, int size) {
-        String title = String.format("Writing boundary feature %d/%d of \"%s\"", featureIndex, featureCount, areaShpFolder.getName());
+        String title = "Writing boundary feature %d/%d of \"%s\"".formatted(featureIndex, featureCount, areaShpFolder.getName());
         return ProgressBarUtils.createProgressBar(title, size);
     }
 

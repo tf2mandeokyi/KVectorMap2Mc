@@ -1,15 +1,18 @@
 package com.mndk.scjdmc.reader;
 
 import com.mndk.scjdmc.column.LayerDataType;
+import com.mndk.scjdmc.util.IntegerMapUtils;
 import com.mndk.scjdmc.util.ScjdDirectoryParsedMap;
-import com.mndk.scjdmc.util.file.ScjdFileInformation;
 import com.mndk.scjdmc.util.ScjdParsedType;
+import com.mndk.scjdmc.util.file.ScjdFileInformation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ShpDirScjdReader extends ScjdDatasetReader {
 
@@ -37,11 +40,13 @@ public class ShpDirScjdReader extends ScjdDatasetReader {
 
         ScjdFileInformation fileInformation = new ScjdFileInformation(directory, parsedType);
 
+        Map<LayerDataType, Integer> layerTypeCount = new HashMap<>();
         ScjdDirectoryParsedMap<T> result = new ScjdDirectoryParsedMap<>(fileInformation);
         for(File shpFile : shpFiles) {
             LayerDataType layerDataType = LayerDataType.fromLayerName(shpFile.getName());
             if(!this.layerFilter.apply(layerDataType)) continue;
-            T shpReadResult = ShpScjdReader.read(shpFile, fileInformation, charset, featureCollectionFunction);
+            int typeCount = IntegerMapUtils.increment(layerTypeCount, layerDataType, 1);
+            T shpReadResult = ShpScjdReader.read(shpFile, fileInformation, charset, featureCollectionFunction, typeCount);
             result.put(layerDataType, shpReadResult);
         }
         return result;

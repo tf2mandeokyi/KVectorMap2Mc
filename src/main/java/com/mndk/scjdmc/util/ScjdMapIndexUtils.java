@@ -41,25 +41,25 @@ public class ScjdMapIndexUtils {
 
     public static int[] indexToPosition(String index) {
         int scale = getTileScale(index);
-        switch(scale) {
-            case 50000: return get50000TilePos(index);
-            case 25000: return get25000TilePos(index);
-            case 10000: return get10000TilePos(index);
-            case 5000: return get5000TilePos(index);
-            case 1000: return get1000TilePos(index);
-            default: throw new IllegalArgumentException("Unsupported tile scale: " + scale + " (index: " + index + ")");
-        }
+        return switch (scale) {
+            case 50000 -> get50000TilePos(index);
+            case 25000 -> get25000TilePos(index);
+            case 10000 -> get10000TilePos(index);
+            case 5000 -> get5000TilePos(index);
+            case 1000 -> get1000TilePos(index);
+            default -> throw new IllegalArgumentException("Unsupported tile scale: " + scale + " (index: " + index + ")");
+        };
     }
 
     public static String positionToIndex(int[] pos, int scale) {
-        switch(scale) {
-            case 50000: return get50000TileIndex(pos);
-            case 25000: return get25000TileIndex(pos);
-            case 10000: return get10000TileIndex(pos);
-            case 5000: return get5000TileIndex(pos);
-            case 1000: return get1000TileIndex(pos);
-            default: throw new IllegalArgumentException("Unsupported tile scale: " + scale);
-        }
+        return switch (scale) {
+            case 50000 -> get50000TileIndex(pos);
+            case 25000 -> get25000TileIndex(pos);
+            case 10000 -> get10000TileIndex(pos);
+            case 5000 -> get5000TileIndex(pos);
+            case 1000 -> get1000TileIndex(pos);
+            default -> throw new IllegalArgumentException("Unsupported tile scale: " + scale);
+        };
     }
 
     public static double[] positionToLongLat(int[] tilePosition, int scale, boolean center) {
@@ -142,8 +142,8 @@ public class ScjdMapIndexUtils {
     }
     private static String get50000TileIndex(int[] pos) {
         int[] newPos = pos.clone();
-        String temp = String.format("%02d", positionToDigit(newPos, 4));
-        return String.format("%d%d", newPos[1], newPos[0] % 10) + temp;
+        String temp = "%02d".formatted(positionToDigit(newPos, 4));
+        return "%d%d".formatted(newPos[1], newPos[0] % 10) + temp;
     }
 
 
@@ -157,7 +157,7 @@ public class ScjdMapIndexUtils {
     }
     private static String get25000TileIndex(int[] pos) {
         int[] newPos = pos.clone();
-        String temp = String.format("%d", positionToDigit(newPos, 2));
+        String temp = "%d".formatted(positionToDigit(newPos, 2));
         return get50000TileIndex(newPos) + temp;
     }
 
@@ -172,7 +172,7 @@ public class ScjdMapIndexUtils {
     }
     private static String get10000TileIndex(int[] pos) {
         int[] newPos = pos.clone();
-        String temp = String.format("%02d", positionToDigit(newPos, 5));
+        String temp = "%02d".formatted(positionToDigit(newPos, 5));
         return get50000TileIndex(newPos) + temp;
     }
 
@@ -187,7 +187,7 @@ public class ScjdMapIndexUtils {
     }
     private static String get5000TileIndex(int[] pos) {
         int[] newPos = pos.clone();
-        String temp = String.format("%03d", positionToDigit(newPos, 10));
+        String temp = "%03d".formatted(positionToDigit(newPos, 10));
         return get50000TileIndex(newPos) + temp;
     }
 
@@ -202,7 +202,7 @@ public class ScjdMapIndexUtils {
     }
     private static String get1000TileIndex(int[] pos) {
         int[] newPos = pos.clone();
-        String temp = String.format("%03d", positionToDigit(newPos, 10));
+        String temp = "%03d".formatted(positionToDigit(newPos, 10));
         return get10000TileIndex(newPos) + temp;
     }
 
@@ -226,13 +226,13 @@ public class ScjdMapIndexUtils {
 
     public static CoordinateReferenceSystem getCoordinateReferenceSystemFromIndex(String index) {
         char number = index.charAt(2);
-        switch(number) {
-            case '5': return EPSG5185;
-            case '6': case '7': return EPSG5186;
-            case '8': case '9': return EPSG5187;
-            case '0': case '1': return EPSG5188;
-        }
-        return null;
+        return switch (number) {
+            case '5' -> EPSG5185;
+            case '6', '7' -> EPSG5186;
+            case '8', '9' -> EPSG5187;
+            case '0', '1' -> EPSG5188;
+            default -> null;
+        };
     }
 
     static {
