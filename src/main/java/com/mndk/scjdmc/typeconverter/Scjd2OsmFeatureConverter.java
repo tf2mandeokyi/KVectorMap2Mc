@@ -92,7 +92,7 @@ public class Scjd2OsmFeatureConverter {
         try (SimpleFeatureIterator featureIterator = featureCollection.features()) {
             while(featureIterator.hasNext()) {
                 SimpleFeature feature = featureIterator.next();
-                if(!featureFilter.apply(feature)) continue;
+                if(!featureFilter.test(feature)) continue;
 
                 features.add(
                         layerDataType.toOsmStyleFeature(feature, idGenerator.apply(++i))

@@ -11,6 +11,7 @@ import com.mndk.scjdmc.util.ProgressBarUtils;
 import com.mndk.scjdmc.util.ScjdParsedType;
 import com.mndk.scjdmc.util.TppTileCoordinate;
 import com.mndk.scjdmc.util.file.DirectoryManager;
+import jakarta.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 import me.tongfei.progressbar.ProgressBar;
@@ -65,7 +66,7 @@ public class ScjdConversionWorkingDirectory {
             Scjd2TppDatasetRelocator.relocate(
                     areaFolder, Constants.CP949, ScjdParsedType.AREA, reader,
                     this.scjdGeojsonFolder, StandardCharsets.UTF_8,
-                    0.1, true
+                    0.1, t -> true
             );
         }
     }
@@ -112,18 +113,21 @@ public class ScjdConversionWorkingDirectory {
     }
 
 
-    public void relocateAllAreas() throws IOException {
-        this.doSimpleRelocation(this.areaDirectory, Constants.CP949, ScjdParsedType.AREA, this.scjdGeojsonFolder, StandardCharsets.UTF_8);
+    public void relocateAllAreas(boolean memoryIntensive, @Nullable String startFileName) throws IOException {
+        this.doSimpleRelocation(this.areaDirectory, Constants.CP949, ScjdParsedType.AREA,
+                this.scjdGeojsonFolder, StandardCharsets.UTF_8, memoryIntensive,
+                startFileName);
     }
     public void doSimpleRelocation(File sourceDir, Charset sourceEncoding, ScjdParsedType parsedType,
-                                   File destinationDir, Charset destinationEncoding) throws IOException {
+                                   File destinationDir, Charset destinationEncoding, boolean memoryIntensive,
+                                   @Nullable String startFileName) throws IOException {
         File[] sourceFiles = sourceDir.listFiles();
         assert sourceFiles != null;
 
-//        boolean start = false;
+        boolean start = startFileName == null;
         for(File sourceFile : sourceFiles) {
-//            if("jeonbuk".equals(sourceFile.getName())) start = true;
-//            if(!start) continue;
+            if(startFileName != null && startFileName.equals(sourceFile.getName())) start = true;
+            if(!start) continue;
 
             if(debug) LOGGER.info("Relocating {}...", sourceFile.getName());
 
@@ -134,12 +138,32 @@ public class ScjdConversionWorkingDirectory {
             }
 
             reader.setLayerFilter(ScjdConversionWorkingDirectory::relocationLayerFilter);
-            Scjd2TppDatasetRelocator.relocate(
-                    sourceFile, sourceEncoding, parsedType, reader,
-                    destinationDir, destinationEncoding,
-                    0, false
-            );
+            if (memoryIntensive) {
+                Scjd2TppDatasetRelocator.relocateMemoryIntensive(
+                        sourceFile, sourceEncoding, parsedType, reader,
+                        destinationDir, destinationEncoding,
+                        0, ScjdConversionWorkingDirectory::cutFilter
+                );
+            } else {
+                Scjd2TppDatasetRelocator.relocate(
+                        sourceFile, sourceEncoding, parsedType, reader,
+                        destinationDir, destinationEncoding,
+                        0, ScjdConversionWorkingDirectory::cutFilter
+                );
+            }
         }
+    }
+
+
+    private static boolean cutFilter(LayerDataType layerDataType) {
+        return layerDataType == LayerDataType.도로중심선
+                || layerDataType == LayerDataType.도로경계
+                || layerDataType == LayerDataType.해안선
+                || layerDataType == LayerDataType.실폭하천
+                || layerDataType == LayerDataType.호수
+                || layerDataType == LayerDataType.철도중심선
+                || layerDataType == LayerDataType.하천중심선
+                || layerDataType == LayerDataType.등고선;
     }
 
 

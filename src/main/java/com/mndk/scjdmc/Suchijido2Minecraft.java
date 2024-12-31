@@ -33,7 +33,12 @@ Select operation number(s) [ex: "1", "23" ]:\s""");
                 .map(Integer::parseInt)
                 .forEach(operations::add);
 
-        if(operations.contains(1)) workingDirectory.relocateAllAreas();
+        if(operations.contains(1)) {
+            System.out.print("Enter the start file name (ex: 'gyeongbuk'): ");
+            String startFile = sc.nextLine();
+            if (startFile.isBlank()) startFile = null;
+            workingDirectory.relocateAllAreas(true, startFile);
+        }
         if(operations.contains(2)) workingDirectory.doCoastlineRelocation();
         if(operations.contains(3)) workingDirectory.convertScjdGeoJsonToOsmGeoJson();
         if(operations.contains(4)) workingDirectory.terrainTest();

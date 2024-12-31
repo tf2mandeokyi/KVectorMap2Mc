@@ -90,7 +90,7 @@ public class FeatureGeometryUtils {
         List<Geometry> result = new ArrayList<>();
         while(featureIterator.hasNext()) {
             SimpleFeature f = featureIterator.next();
-            if(!featureFilter.apply(f)) continue;
+            if(!featureFilter.test(f)) continue;
             result.add((Geometry) f.getDefaultGeometry());
         }
         featureIterator.close();
